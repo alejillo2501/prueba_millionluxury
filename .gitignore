@@ -17,14 +17,6 @@ build/
 .now/
 .next/cache/
 
-# Env files
-.env
-.env.local
-.env.*.local
-.env.test
-.env.production.local
-/*.env
-
 # Typescript
 *.tsbuildinfo
 
