@@ -1,0 +1,31 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy csproj files for better layer caching
+COPY ["RealEstate/RealEstate.API/RealEstate.API.csproj", "RealEstate.API/"]
+COPY ["RealEstate/RealEstate.Application/RealEstate.Application.csproj", "RealEstate.Application/"]
+COPY ["RealEstate/RealEstate.Domain/RealEstate.Domain.csproj", "RealEstate.Domain/"]
+COPY ["RealEstate/RealEstate.Infrastructure/RealEstate.Infrastructure.csproj", "RealEstate.Infrastructure/"]
+RUN dotnet restore "RealEstate.API/RealEstate.API.csproj"
+
+# Copy everything else and build
+COPY . .
+WORKDIR "/src/RealEstate/RealEstate.API"
+RUN dotnet build "RealEstate.API.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "RealEstate.API.csproj" -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+
+# Expose port 5144
+EXPOSE 5144
+
+# Force HTTP only (no HTTPS)
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS="http://+:5144"
+ENV PORT=5144
+
+ENTRYPOINT ["dotnet", "RealEstate.API.dll"]

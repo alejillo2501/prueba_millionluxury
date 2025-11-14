@@ -1,0 +1,11 @@
+﻿namespace RealEstate.Domain.Entities;
+
+public class Owner
+{
+    public string Id { get; set; } = null!;
+    public string Name { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    public string Photo { get; set; } = string.Empty;
+    public DateTime Birthday { get; set; }
+    public bool IsActive { get; set; } = true;
+}

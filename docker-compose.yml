@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-real-estate
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: RealEstatePlatform
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - real-estate-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: real-estate-backend
+    ports:
+      - "5144:5144"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__MongoDB: "mongodb://mongodb:27017/RealEstatePlatform"
+    depends_on:
+      - mongodb
+    networks:
+      - real-estate-network
+    volumes:
+      - ./RealEstate:/src/RealEstate
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.nextjs
+    container_name: real-estate-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:5144"
+    depends_on:
+      - backend
+    networks:
+      - real-estate-network
+    volumes:
+      - ./inmobiliaria-app:/app
+
+volumes:
+  mongodb_data:
+
+networks:
+  real-estate-network:
+    driver: bridge
