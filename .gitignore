@@ -93,8 +93,3 @@ inmobiliaria-app/node_modules/
 inmobiliaria-app/.next/
 RealEstate/**/bin/
 RealEstate/**/obj/
-
-# Secrets / credentials
-secrets.json
-*.key
-*.pem
